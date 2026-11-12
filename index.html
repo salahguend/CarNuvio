@@ -41,50 +41,48 @@
   </section>
 
   <form class="panel" id="f" autocomplete="off">
-    <div class="group" role="group" aria-labelledby="g1">
-      <h3 id="g1">What are you looking for?<span class="why">Leave blank to see everything in your budget.</span></h3>
+    <div class="quick">
+      <span class="quick-label" id="q-l">Quick start</span>
+      <div class="chips" id="chips" role="group" aria-labelledby="q-l"></div>
+    </div>
+
+    <div class="fields">
+      <div><label for="make">Make</label><input id="make" placeholder="Toyota"></div>
+      <div><label for="model">Model</label><input id="model" placeholder="Camry"></div>
+      <div><label for="zip">ZIP code</label><input id="zip" inputmode="numeric" maxlength="5" placeholder="53202"></div>
+      <div><label for="maxPrice">Max price ($)</label><input id="maxPrice" inputmode="numeric" placeholder="10000"></div>
+      <div><label for="cl">Craigslist area</label>
+        <select id="cl"><option value="">Choose an area</option></select></div>
+    </div>
+
+    <details class="more" id="more">
+      <summary>More filters</summary>
       <div class="fields">
-        <div><label for="make">Make</label><input id="make" placeholder="Toyota"></div>
-        <div><label for="model">Model</label><input id="model" placeholder="Camry"></div>
         <div><label for="cond">Condition</label>
           <select id="cond"><option value="">Any</option><option value="used">Used</option><option value="new">New</option></select></div>
-      </div>
-    </div>
-
-    <div class="group" role="group" aria-labelledby="g2">
-      <h3 id="g2">Where?<span class="why">Craigslist needs an area. Other sites use your ZIP.</span></h3>
-      <div class="fields">
-        <div><label for="zip">ZIP code</label><input id="zip" inputmode="numeric" maxlength="5" placeholder="53202"></div>
+        <div><label for="kind">Body type</label>
+          <select id="kind"><option value="">Any</option><option value="truck">Truck</option><option value="SUV">SUV</option><option value="sedan">Sedan</option><option value="hatchback">Hatchback</option><option value="minivan">Minivan</option><option value="coupe">Coupe</option><option value="convertible">Convertible</option><option value="hybrid">Hybrid</option><option value="electric">Electric</option></select></div>
         <div><label for="radius">Distance</label>
           <select id="radius"><option value="10">10 miles</option><option value="25">25 miles</option><option value="50" selected>50 miles</option><option value="100">100 miles</option><option value="200">200 miles</option><option value="500">500 miles</option></select></div>
-        <div><label for="cl">Craigslist area</label>
-          <select id="cl"><option value="">Choose an area</option></select></div>
-      </div>
-    </div>
-
-    <div class="group" role="group" aria-labelledby="g3">
-      <h3 id="g3">Budget and specs</h3>
-      <div class="fields">
         <div><label for="minPrice">Min price ($)</label><input id="minPrice" inputmode="numeric"></div>
-        <div><label for="maxPrice">Max price ($)</label><input id="maxPrice" inputmode="numeric" placeholder="10000"></div>
         <div><label for="minYear">Oldest year</label><input id="minYear" inputmode="numeric" placeholder="2015"></div>
         <div><label for="maxYear">Newest year</label><input id="maxYear" inputmode="numeric"></div>
         <div><label for="maxMiles">Max miles</label><input id="maxMiles" inputmode="numeric" placeholder="100000"></div>
       </div>
-    </div>
+    </details>
 
     <div class="actions">
-      <button type="submit" class="btn btn-primary">Build search links</button>
-      <button type="button" class="btn btn-quiet" id="openAll">Open all in new tabs</button>
+      <button type="button" class="btn btn-primary" id="openAll">Open all in new tabs</button>
       <button type="button" class="btn btn-quiet" id="save">Save this search</button>
+      <button type="button" class="btn btn-quiet" id="reset">Reset</button>
     </div>
-    <p class="hint">Your browser may ask permission before opening several tabs at once. Saved searches stay on this device.</p>
+    <p class="hint">Your links update as you type. Your browser may ask permission before opening several tabs. Saved searches stay on this device.</p>
   </form>
 
   <section class="sign" id="sign" aria-labelledby="sign-h" aria-live="polite">
     <div class="sign-inner">
       <h2 id="sign-h">Your search links</h2>
-      <p class="sign-sub" id="signSub">Fill in the form, then choose Build search links. Each site opens in a new tab.</p>
+      <p class="sign-sub" id="signSub"></p>
       <ul class="exits" id="exits"></ul>
       <p class="sign-note" id="skipNote"></p>
     </div>
@@ -95,13 +93,13 @@
     <div id="savedList"></div>
   </section>
 
-  <section class="block" id="how">
-    <h2>How it works</h2>
-    <div class="steps">
-      <div class="step"><span class="n">1</span><h3>Describe the car</h3><p>Add a make and model, a budget, and your ZIP code. Skip anything you don't care about.</p></div>
-      <div class="step"><span class="n">2</span><h3>Open every site</h3><p>CarWorld builds a ready-to-use search link for each site. Open one, or open them all at once.</p></div>
-      <div class="step"><span class="n">3</span><h3>Check the car before you call</h3><p>Decode the VIN, look up recalls, and use the checklists to spot scams and ask the right questions.</p></div>
-    </div>
+  <section class="block" id="how" aria-labelledby="how-h">
+    <h2 id="how-h">How it works</h2>
+    <ol class="flow">
+      <li><span class="n">1</span>Tell CarWorld what you want.</li>
+      <li><span class="n">2</span>Open the same search on every site.</li>
+      <li><span class="n">3</span>Check the car before you call the seller.</li>
+    </ol>
   </section>
 
   <section class="block" id="check">
@@ -179,7 +177,7 @@
     <div class="foot-links">
       <a href="about.html">About</a>
       <a href="privacy.html">Privacy</a>
-      <a href="mailto:your-email@example.com">Contact</a>
+      <a href="mailto:your-email@example.com" id="contactLink">Contact</a>
     </div>
   </div>
 </footer>
@@ -188,6 +186,9 @@
 
 <script>
 /* ===================== CONFIG (edit these) ===================== */
+// Your contact address for the footer link on this page.
+const CONTACT_EMAIL = "your-email@example.com";
+
 // Optional: after you are approved for an affiliate program, put the tracking
 // template here. Use {url} for the destination (URL-encoded) or {rawurl} for as-is.
 // Leave empty until then. Example: "https://example.sjv.io/c/123456/789/1011?u={url}"
@@ -216,7 +217,7 @@ function qs(pairs){
   return pairs.filter(function(p){ return p[1] !== "" && p[1] != null; })
               .map(function(p){ return p[0] + "=" + enc(p[1]); }).join("&");
 }
-function kw(q){ return [q.make, q.model].filter(Boolean).join(" ").trim(); }
+function kw(q){ return [q.make, q.model, q.kind].filter(Boolean).join(" ").trim(); }
 function aff(key, url){
   var t = (typeof AFFILIATE !== "undefined" && AFFILIATE[key]) || "";
   if(!t) return url;
@@ -229,7 +230,7 @@ function googleSite(domain, q){
 }
 
 var SITES = [
-  { id:"autotempest", name:"AutoTempest", note:"Meta-search: pulls in several sites at once", skips:[],
+  { id:"autotempest", name:"AutoTempest", note:"Meta-search: pulls in several sites at once", skips:["body type"],
     build:function(q){ return aff("autotempest","https://www.autotempest.com/results?" + qs([
       ["make",(q.make||"").toLowerCase()],["model",(q.model||"").toLowerCase()],["zip",q.zip],["radius",q.radius],
       ["minprice",q.minPrice],["maxprice",q.maxPrice],["minyear",q.minYear],["maxyear",q.maxYear],["maxmiles",q.maxMiles]])); } },
@@ -276,32 +277,58 @@ function buildAll(q){
 (function(){
   if(typeof document === "undefined") return;
   var $ = function(id){ return document.getElementById(id); };
-  var FIELDS = ["make","model","cond","zip","radius","minPrice","maxPrice","minYear","maxYear","maxMiles","cl"];
+  var SEARCH = ["make","model","cond","kind","zip","minPrice","maxPrice","minYear","maxYear","maxMiles"];
+  var FIELDS = SEARCH.concat(["radius","cl"]);
+  var MORE = ["cond","kind","minPrice","minYear","maxYear","maxMiles"];
+  var NUMERIC = ["zip","minPrice","maxPrice","minYear","maxYear","maxMiles"];
+  var IDLE_TEXT = "Start typing or pick a quick start. Your links appear here and update as you type.";
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var lastLinks = [];
+
+  var CHIPS = [
+    { label:"Under $5,000", set:{ maxPrice:"5000" } },
+    { label:"Trucks", set:{ kind:"truck" } },
+    { label:"SUVs", set:{ kind:"SUV" } },
+    { label:"Hybrids", set:{ kind:"hybrid" } },
+    { label:"First car under $8,000", set:{ maxPrice:"8000", minYear:"2010", maxMiles:"120000" },
+      title:"Sets a max price of $8,000, model year 2010 or newer, and up to 120,000 miles" }
+  ];
 
   var cl = $("cl");
   Object.keys(CL_AREAS).forEach(function(k){
     var o = document.createElement("option"); o.value = k; o.textContent = CL_AREAS[k]; cl.appendChild(o);
   });
+  var contact = $("contactLink");
+  if(contact && typeof CONTACT_EMAIL === "string") contact.href = "mailto:" + CONTACT_EMAIL;
 
   function read(){
     var q = {};
     FIELDS.forEach(function(f){ q[f] = $(f).value.trim(); });
-    ["zip","minPrice","maxPrice","minYear","maxYear","maxMiles"].forEach(function(f){ q[f] = q[f].replace(/[^0-9]/g,""); });
+    NUMERIC.forEach(function(f){ q[f] = q[f].replace(/[^0-9]/g,""); });
     return q;
   }
   function write(q){ FIELDS.forEach(function(f){ if(q[f] != null) $(f).value = q[f]; }); }
   function store(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
   function load(k,d){ try{ var v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } }
+  function isEmpty(q){ return SEARCH.every(function(f){ return !q[f]; }); }
+  function openMoreIfNeeded(q){
+    if(MORE.some(function(f){ return q[f]; }) || (q.radius && q.radius !== "50")) $("more").open = true;
+  }
 
   function summary(q){
-    var b = [kw(q) || "Any vehicle"];
+    var what = [q.cond, kw(q)].filter(Boolean).join(" ") || "Any vehicle";
+    var b = [what];
     if(q.maxPrice) b.push("under $" + Number(q.maxPrice).toLocaleString());
+    if(q.minYear && q.maxYear) b.push(q.minYear + " to " + q.maxYear);
+    else if(q.minYear) b.push(q.minYear + " or newer");
+    else if(q.maxYear) b.push(q.maxYear + " or older");
+    if(q.maxMiles) b.push("under " + Number(q.maxMiles).toLocaleString() + " miles");
     if(q.zip) b.push("within " + q.radius + " miles of " + q.zip);
     return b.join(", ");
   }
 
-  /* the sign: idle (names only) until a search is built, then live links */
+  /* the sign: idle (names only) until there is a search, then live links */
+  var idleLinks = SITES.map(function(s){ return { name:s.name, note:s.note }; });
   function paintSign(links, live){
     var box = $("exits"); box.innerHTML = "";
     links.forEach(function(l){
@@ -325,29 +352,75 @@ function buildAll(q){
     });
   }
 
-  var lastLinks = [];
-  function render(){
+  function chipOn(c, q){ return Object.keys(c.set).every(function(k){ return q[k] === c.set[k]; }); }
+  function syncChips(q){ CHIPS.forEach(function(c){ c.el.setAttribute("aria-pressed", chipOn(c, q) ? "true" : "false"); }); }
+
+  function update(){
     var q = read();
     store("cw_last", q);
+    syncChips(q);
+    if(isEmpty(q)){
+      lastLinks = [];
+      paintSign(idleLinks, false);
+      $("signSub").textContent = IDLE_TEXT;
+      $("skipNote").textContent = "";
+      return;
+    }
     lastLinks = buildAll(q);
     paintSign(lastLinks, true);
     $("signSub").textContent = summary(q);
     var skipped = {};
+    var set = { year:q.minYear||q.maxYear, miles:q.maxMiles, price:q.minPrice||q.maxPrice, distance:q.zip, "body type":q.kind };
     lastLinks.forEach(function(l){
-      var set = { year:q.minYear||q.maxYear, miles:q.maxMiles, price:q.minPrice||q.maxPrice, distance:q.zip };
       l.skips.forEach(function(k){ if(set[k]) skipped[l.name] = (skipped[l.name]||[]).concat(k); });
     });
     var notes = Object.keys(skipped).map(function(n){ return n + " (" + skipped[n].join(", ") + ")"; });
     $("skipNote").textContent = notes.length
       ? "These sites can't take every filter from a link, so narrow the results on their page: " + notes.join("; ") + "."
       : "";
-    $("sign").scrollIntoView({behavior: reduce ? "auto" : "smooth", block:"start"});
   }
 
-  $("f").addEventListener("submit", function(e){ e.preventDefault(); render(); });
+  /* scroll the sign into view only if it is mostly off screen */
+  function reveal(){
+    var r = $("sign").getBoundingClientRect();
+    if(r.top > window.innerHeight * 0.8 || r.bottom < 0){
+      $("sign").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block:"nearest" });
+    }
+  }
+
+  /* quick-start chips */
+  CHIPS.forEach(function(c){
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "chip"; b.textContent = c.label; b.setAttribute("aria-pressed","false");
+    if(c.title) b.title = c.title;
+    b.addEventListener("click", function(){
+      var on = chipOn(c, read());
+      Object.keys(c.set).forEach(function(k){ $(k).value = on ? "" : c.set[k]; });
+      if(!on && Object.keys(c.set).some(function(k){ return MORE.indexOf(k) > -1; })) $("more").open = true;
+      update(); reveal();
+    });
+    $("chips").appendChild(b); c.el = b;
+  });
+
+  /* live updates while typing */
+  var timer;
+  function soon(){ clearTimeout(timer); timer = setTimeout(update, 200); }
+  FIELDS.forEach(function(f){ $(f).addEventListener("input", soon); $(f).addEventListener("change", soon); });
+
+  $("f").addEventListener("submit", function(e){ e.preventDefault(); update(); reveal(); });
+
   $("openAll").addEventListener("click", function(){
-    render();
+    update();
+    if(!lastLinks.length){
+      $("signSub").textContent = "Enter a make, a budget or a ZIP code first, then open all.";
+      reveal(); return;
+    }
     lastLinks.filter(function(l){ return l.url; }).forEach(function(l){ window.open(l.url, "_blank", "noopener"); });
+  });
+
+  $("reset").addEventListener("click", function(){
+    FIELDS.forEach(function(f){ $(f).value = (f === "radius") ? "50" : ""; });
+    update();
   });
 
   /* saved searches */
@@ -358,15 +431,19 @@ function buildAll(q){
     list.forEach(function(q, i){
       var d = document.createElement("div"); d.className = "saved-row";
       var a = document.createElement("button"); a.type = "button"; a.className = "linkish"; a.textContent = summary(q);
-      a.addEventListener("click", function(){ write(q); render(); });
+      a.addEventListener("click", function(){ write(q); openMoreIfNeeded(q); update(); reveal(); });
       var x = document.createElement("button"); x.type = "button"; x.className = "linkish"; x.textContent = "Remove";
       x.addEventListener("click", function(){ var l = load("cw_saved", []); l.splice(i,1); store("cw_saved", l); drawSaved(); });
       d.appendChild(a); d.appendChild(x); box.appendChild(d);
     });
   }
   $("save").addEventListener("click", function(){
-    var l = load("cw_saved", []); l.unshift(read()); store("cw_saved", l.slice(0,20)); drawSaved();
-    $("savedCard").scrollIntoView({behavior: reduce ? "auto" : "smooth", block:"nearest"});
+    var q = read();
+    if(isEmpty(q)){ $("signSub").textContent = "Add something to search for before saving."; reveal(); return; }
+    var l = load("cw_saved", []);
+    if(!l.length || JSON.stringify(l[0]) !== JSON.stringify(q)) l.unshift(q);
+    store("cw_saved", l.slice(0,20)); drawSaved();
+    var b = $("save"); b.textContent = "Saved"; setTimeout(function(){ b.textContent = "Save this search"; }, 1600);
   });
 
   /* tabs */
@@ -415,8 +492,10 @@ function buildAll(q){
   $("vin").addEventListener("keydown", function(e){ if(e.key === "Enter"){ e.preventDefault(); $("vinGo").click(); } });
 
   /* init */
-  write(load("cw_last", {}));
-  paintSign(SITES.map(function(s){ return { name:s.name, note:s.note }; }), false);
+  var saved = load("cw_last", {});
+  write(saved);
+  openMoreIfNeeded(saved);
+  update();
   drawSaved();
   if(Object.keys(AFFILIATE).some(function(k){ return AFFILIATE[k]; })) $("affNote").hidden = false;
 })();
