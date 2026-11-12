@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Car Search Hub – Search Every Used Car Site at Once</title>
+<meta name="description" content="Search Craigslist, Facebook Marketplace, Autotrader, Cars.com, eBay Motors and more with one form. Free VIN decoder and recall check included.">
+<style>
+  :root{--bg:#f6f7f9;--card:#fff;--text:#16202a;--muted:#5b6773;--line:#dfe3e8;--accent:#1d5fd1;--accent-d:#164aa3;--ok:#157a3d}
+  @media (prefers-color-scheme:dark){:root{--bg:#10151b;--card:#18202a;--text:#e8edf2;--muted:#9aa7b4;--line:#2a3643;--accent:#5b9bff;--accent-d:#86b4ff;--ok:#4cc27f}}
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text)}
+  header,main,footer{max-width:900px;margin:0 auto;padding:0 16px}
+  header{padding-top:28px}
+  h1{font-size:1.7rem;margin:0 0 4px}
+  .sub{color:var(--muted);margin:0 0 20px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:18px}
+  h2{font-size:1.15rem;margin:0 0 12px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+  label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:3px}
+  input,select{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);font:inherit}
+  button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:#fff;padding:10px 16px}
+  button:hover{background:var(--accent-d)}
+  button.ghost{background:transparent;color:var(--accent)}
+  .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .sites{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-top:6px}
+  .site{display:block;text-decoration:none;color:inherit;border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--bg)}
+  .site:hover{border-color:var(--accent)}
+  .site b{display:block;color:var(--accent)}
+  .site small{color:var(--muted)}
+  .hint{font-size:.85rem;color:var(--muted)}
+  .saved{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid var(--line)}
+  .saved:first-child{border-top:0}
+  .saved a{color:var(--accent);cursor:pointer;text-decoration:underline}
+  .tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+  .tabs button{background:transparent;color:var(--accent)}
+  .tabs button.on{background:var(--accent);color:#fff}
+  pre{white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px;font-size:.9rem;overflow:auto}
+  table{border-collapse:collapse;width:100%;font-size:.92rem}
+  td{padding:6px 8px;border-top:1px solid var(--line);vertical-align:top}
+  td:first-child{color:var(--muted);width:40%}
+  .warn{color:#b3261e}.ok{color:var(--ok)}
+  ul.check{padding-left:20px;margin:6px 0 14px}
+  ul.check li{margin:4px 0}
+  footer{padding-bottom:40px;color:var(--muted);font-size:.82rem}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header>
+  <h1>Car Search Hub</h1>
+  <p class="sub">Fill in your search once. We open the same search on every major car site. Free, no sign-up.</p>
+</header>
+
+<main>
+  <section class="card" aria-labelledby="s-h">
+    <h2 id="s-h">1. Search every site at once</h2>
+    <form id="f" autocomplete="off">
+      <div class="grid">
+        <div><label for="make">Make</label><input id="make" placeholder="Toyota"></div>
+        <div><label for="model">Model</label><input id="model" placeholder="Camry"></div>
+        <div><label for="cond">Condition</label>
+          <select id="cond"><option value="">Any</option><option value="used">Used</option><option value="new">New</option></select></div>
+        <div><label for="zip">ZIP code</label><input id="zip" inputmode="numeric" maxlength="5" placeholder="53202"></div>
+        <div><label for="radius">Distance</label>
+          <select id="radius"><option>10</option><option>25</option><option selected>50</option><option>100</option><option>200</option><option>500</option></select></div>
+        <div><label for="minPrice">Min price ($)</label><input id="minPrice" inputmode="numeric"></div>
+        <div><label for="maxPrice">Max price ($)</label><input id="maxPrice" inputmode="numeric"></div>
+        <div><label for="minYear">Min year</label><input id="minYear" inputmode="numeric" placeholder="2015"></div>
+        <div><label for="maxYear">Max year</label><input id="maxYear" inputmode="numeric"></div>
+        <div><label for="maxMiles">Max miles</label><input id="maxMiles" inputmode="numeric" placeholder="100000"></div>
+        <div><label for="cl">Craigslist area</label>
+          <select id="cl"><option value="">Choose…</option></select></div>
+      </div>
+      <div class="row">
+        <button type="submit">Build my search links</button>
+        <button type="button" class="ghost" id="openAll">Open all in new tabs</button>
+        <button type="button" class="ghost" id="save">Save this search</button>
+      </div>
+      <p class="hint">Leave make and model empty to search by price and year only. Your browser may ask permission to open several tabs at once.</p>
+    </form>
+    <div id="out" hidden>
+      <h2 style="margin-top:18px">Your search links</h2>
+      <div class="sites" id="sites"></div>
+      <p class="hint" id="skipNote"></p>
+    </div>
+  </section>
+
+  <section class="card" id="savedCard" hidden>
+    <h2>Saved searches</h2>
+    <div id="savedList"></div>
+    <p class="hint">Saved only in this browser. Nothing is sent to us.</p>
+  </section>
+
+  <section class="card" aria-labelledby="v-h">
+    <h2 id="v-h">2. Check a car before you call the seller</h2>
+    <div class="tabs">
+      <button type="button" class="on" data-tab="vin">VIN decoder + recalls</button>
+      <button type="button" data-tab="list">Listing checklist</button>
+      <button type="button" data-tab="ask">Questions to ask</button>
+    </div>
+
+    <div id="tab-vin">
+      <label for="vin">17-character VIN (found on the dashboard or the listing)</label>
+      <div class="row" style="margin-top:4px">
+        <input id="vin" maxlength="17" placeholder="1HGCM82633A004352" style="flex:1;min-width:220px;text-transform:uppercase">
+        <button type="button" id="vinGo">Check VIN</button>
+      </div>
+      <div id="vinOut" style="margin-top:14px"></div>
+      <p class="hint">Data comes live from the U.S. government's NHTSA vehicle database. A clean recall result does not replace a paid history report or an inspection.</p>
+    </div>
+
+    <div id="tab-list" hidden>
+      <b>Red flags in a listing</b>
+      <ul class="check">
+        <li>Price far below similar cars, with a story about why it must go fast</li>
+        <li>Seller will not meet in person, only wants wire transfer, gift cards or crypto</li>
+        <li>Seller refuses to share the VIN or photos of the title</li>
+        <li>Title brands such as salvage, rebuilt, flood or lemon-law buyback</li>
+        <li>Odometer reading that does not match the wear on pedals, seat and steering wheel</li>
+        <li>Photos that look like stock images, or a different location than the seller says</li>
+        <li>"Curbstoner" signs: several cars for sale from one seller, and the name on the title is not theirs</li>
+      </ul>
+      <b>Before you pay</b>
+      <ul class="check">
+        <li>Run the VIN here, then consider a full history report (Carfax or AutoCheck)</li>
+        <li>Pay a local mechanic for a pre-purchase inspection (typically $100–200)</li>
+        <li>Meet in a public place; for private sales, complete the transaction at a bank or DMV office</li>
+        <li>Confirm the title is in the seller's name and has no lien</li>
+      </ul>
+    </div>
+
+    <div id="tab-ask" hidden>
+      <ul class="check">
+        <li>Is the title clean, and is it in your name?</li>
+        <li>Has the car been in any accidents or had major repairs?</li>
+        <li>Do you have service records?</li>
+        <li>Why are you selling it?</li>
+        <li>Any warning lights, leaks, or problems with the A/C, brakes, or transmission?</li>
+        <li>How many owners has it had?</li>
+        <li>Can I take it for a test drive and to my mechanic for an inspection?</li>
+        <li>Is the price firm?</li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p id="affNote" hidden>Some links on this site may be affiliate links, which means we may earn a commission if you buy through them, at no cost to you.</p>
+  <p>Car Search Hub is not affiliated with any of the sites linked above and does not host or verify listings. Always inspect a vehicle and confirm details with the seller before paying. VIN and recall data from NHTSA.</p>
+</footer>
+
+<script>
+/* ===================== CONFIG (edit these) ===================== */
+// Optional: after you are approved for an affiliate program, put the tracking
+// template here. Use {url} for the destination (URL-encoded) or {rawurl} for as-is.
+// Leave empty until then. Example: "https://example.sjv.io/c/123456/789/1011?u={url}"
+const AFFILIATE = {
+  autotrader: "",
+  cars: "",
+  ebay: "",
+  autotempest: ""
+};
+/* =============================================================== */
+
+/*BUILD_START*/
+const CL_AREAS = {
+  newyork:"New York",losangeles:"Los Angeles",chicago:"Chicago",houston:"Houston",phoenix:"Phoenix",philadelphia:"Philadelphia",
+  sanantonio:"San Antonio",sandiego:"San Diego",dallas:"Dallas",austin:"Austin",jacksonville:"Jacksonville",sfbay:"SF Bay Area",
+  columbus:"Columbus",charlotte:"Charlotte",indianapolis:"Indianapolis",seattle:"Seattle",denver:"Denver",washingtondc:"Washington DC",
+  boston:"Boston",nashville:"Nashville",detroit:"Detroit",portland:"Portland",lasvegas:"Las Vegas",memphis:"Memphis",louisville:"Louisville",
+  baltimore:"Baltimore",milwaukee:"Milwaukee",albuquerque:"Albuquerque",tucson:"Tucson",sacramento:"Sacramento",kansascity:"Kansas City",
+  atlanta:"Atlanta",miami:"Miami",raleigh:"Raleigh",omaha:"Omaha",minneapolis:"Minneapolis",tampa:"Tampa",neworleans:"New Orleans",
+  cleveland:"Cleveland",stlouis:"St. Louis",pittsburgh:"Pittsburgh",cincinnati:"Cincinnati",orlando:"Orlando",saltlakecity:"Salt Lake City",
+  madison:"Madison",oklahomacity:"Oklahoma City",honolulu:"Honolulu",anchorage:"Anchorage",boise:"Boise",richmond:"Richmond"
+};
+
+function enc(s){ return encodeURIComponent(String(s)).replace(/%20/g, "+"); }
+function qs(pairs){
+  return pairs.filter(function(p){ return p[1] !== "" && p[1] != null; })
+              .map(function(p){ return p[0] + "=" + enc(p[1]); }).join("&");
+}
+function kw(q){ return [q.make, q.model].filter(Boolean).join(" ").trim(); }
+function aff(key, url){
+  var t = (typeof AFFILIATE !== "undefined" && AFFILIATE[key]) || "";
+  if(!t) return url;
+  return t.replace("{url}", encodeURIComponent(url)).replace("{rawurl}", url);
+}
+function googleSite(domain, q){
+  var parts = [kw(q) || "used cars", "for sale"];
+  if(q.zip) parts.push(q.zip);
+  return "https://www.google.com/search?" + qs([["q", "site:" + domain + " " + parts.join(" ")]]);
+}
+
+var SITES = [
+  { id:"autotempest", name:"AutoTempest", note:"Meta-search: pulls in several sites at once", skips:[],
+    build:function(q){ return aff("autotempest","https://www.autotempest.com/results?" + qs([
+      ["make",(q.make||"").toLowerCase()],["model",(q.model||"").toLowerCase()],["zip",q.zip],["radius",q.radius],
+      ["minprice",q.minPrice],["maxprice",q.maxPrice],["minyear",q.minYear],["maxyear",q.maxYear],["maxmiles",q.maxMiles]])); } },
+  { id:"craigslist", name:"Craigslist", note:"Private sellers and dealers", skips:[], needs:"cl",
+    build:function(q){
+      if(!q.cl) return null;
+      return "https://" + q.cl + ".craigslist.org/search/cta?" + qs([
+        ["query",kw(q)],["postal",q.zip],["search_distance",q.zip ? q.radius : ""],["min_price",q.minPrice],["max_price",q.maxPrice],
+        ["min_auto_year",q.minYear],["max_auto_year",q.maxYear],["max_auto_miles",q.maxMiles]]); } },
+  { id:"facebook", name:"Facebook Marketplace", note:"Uses the location saved in your Facebook account", skips:["year","miles","distance"],
+    build:function(q){ return "https://www.facebook.com/marketplace/category/vehicles?" + qs([
+      ["query",kw(q)],["minPrice",q.minPrice],["maxPrice",q.maxPrice],["exact","false"]]); } },
+  { id:"autotrader", name:"Autotrader", note:"Dealers and some private sellers", skips:["miles"],
+    build:function(q){ return aff("autotrader","https://www.autotrader.com/cars-for-sale/" +
+      (q.cond === "used" ? "used-cars" : q.cond === "new" ? "new-cars" : "all-cars") + "?" + qs([
+      ["keywordPhrase",kw(q)],["zip",q.zip],["searchRadius",q.radius],["minPrice",q.minPrice],["maxPrice",q.maxPrice],
+      ["startYear",q.minYear],["endYear",q.maxYear]])); } },
+  { id:"cars", name:"Cars.com", note:"Mostly dealer inventory", skips:[],
+    build:function(q){ return aff("cars","https://www.cars.com/shopping/results/?" + qs([
+      ["stock_type",q.cond || "all"],["keyword",kw(q)],["zip",q.zip],["maximum_distance",q.zip ? q.radius : ""],
+      ["list_price",q.minPrice],["list_price_max",q.maxPrice],["year_min",q.minYear],["year_max",q.maxYear],["mileage_max",q.maxMiles]])); } },
+  { id:"ebay", name:"eBay Motors", note:"Auctions and buy-it-now", skips:["year","miles"],
+    build:function(q){ return aff("ebay","https://www.ebay.com/sch/Cars-Trucks/6001/i.html?" + qs([
+      ["_nkw",kw(q) + (q.minYear ? " " + q.minYear + "+" : "")],["_udlo",q.minPrice],["_udhi",q.maxPrice],
+      ["_stpos",q.zip],["_sadis",q.zip ? q.radius : ""],["_fspt",q.zip ? "1" : ""]])); } },
+  { id:"cargurus", name:"CarGurus", note:"Opens a Google search limited to CarGurus", skips:["price","year","miles"],
+    build:function(q){ return googleSite("cargurus.com", q); } },
+  { id:"carvana", name:"Carvana", note:"Opens a Google search limited to Carvana", skips:["price","year","miles"],
+    build:function(q){ return googleSite("carvana.com", q); } },
+  { id:"carmax", name:"CarMax", note:"Opens a Google search limited to CarMax", skips:["price","year","miles"],
+    build:function(q){ return googleSite("carmax.com", q); } },
+  { id:"offerup", name:"OfferUp", note:"Opens a Google search limited to OfferUp", skips:["price","year","miles"],
+    build:function(q){ return googleSite("offerup.com", q); } }
+];
+
+function buildAll(q){
+  return SITES.map(function(s){
+    return { id:s.id, name:s.name, note:s.note, skips:s.skips, url:s.build(q), needs:s.needs };
+  });
+}
+/*BUILD_END*/
+
+/* ---------- UI wiring ---------- */
+(function(){
+  if(typeof document === "undefined") return;
+  var $ = function(id){ return document.getElementById(id); };
+  var FIELDS = ["make","model","cond","zip","radius","minPrice","maxPrice","minYear","maxYear","maxMiles","cl"];
+
+  var cl = $("cl");
+  Object.keys(CL_AREAS).forEach(function(k){
+    var o = document.createElement("option"); o.value = k; o.textContent = CL_AREAS[k]; cl.appendChild(o);
+  });
+
+  function read(){
+    var q = {};
+    FIELDS.forEach(function(f){ q[f] = $(f).value.trim(); });
+    ["zip","minPrice","maxPrice","minYear","maxYear","maxMiles"].forEach(function(f){ q[f] = q[f].replace(/[^0-9]/g,""); });
+    return q;
+  }
+  function write(q){ FIELDS.forEach(function(f){ if(q[f] != null) $(f).value = q[f]; }); }
+  function store(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+  function load(k,d){ try{ var v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } }
+
+  var lastLinks = [];
+  function render(){
+    var q = read();
+    store("csh_last", q);
+    lastLinks = buildAll(q);
+    var box = $("sites"); box.innerHTML = "";
+    var skippedAny = {};
+    lastLinks.forEach(function(l){
+      var a = document.createElement("a"); a.className = "site"; a.target = "_blank"; a.rel = "noopener noreferrer sponsored";
+      var b = document.createElement("b"); b.textContent = l.name;
+      var s = document.createElement("small");
+      if(!l.url){
+        a.removeAttribute("target"); a.href = "#"; s.textContent = "Pick a Craigslist area above first";
+        a.addEventListener("click", function(e){ e.preventDefault(); $("cl").focus(); });
+      } else { a.href = l.url; s.textContent = l.note; }
+      a.appendChild(b); a.appendChild(s);
+      box.appendChild(a);
+      l.skips.forEach(function(k){
+        var set = { year:q.minYear||q.maxYear, miles:q.maxMiles, price:q.minPrice||q.maxPrice, distance:q.zip };
+        if(set[k]) skippedAny[l.name] = (skippedAny[l.name]||[]).concat(k);
+      });
+    });
+    var notes = Object.keys(skippedAny).map(function(n){ return n + " (" + skippedAny[n].join(", ") + ")"; });
+    $("skipNote").textContent = notes.length
+      ? "These sites can't take every filter from a link, so narrow further on their page: " + notes.join("; ") + "."
+      : "";
+    $("out").hidden = false;
+    $("out").scrollIntoView({behavior:"smooth", block:"nearest"});
+  }
+
+  $("f").addEventListener("submit", function(e){ e.preventDefault(); render(); });
+  $("openAll").addEventListener("click", function(){
+    render();
+    lastLinks.filter(function(l){ return l.url; }).forEach(function(l){ window.open(l.url, "_blank", "noopener"); });
+  });
+
+  /* saved searches */
+  function label(q){
+    var bits = [kw(q) || "Any vehicle"];
+    if(q.maxPrice) bits.push("under $" + Number(q.maxPrice).toLocaleString());
+    if(q.zip) bits.push("near " + q.zip);
+    return bits.join(" ");
+  }
+  function drawSaved(){
+    var list = load("csh_saved", []);
+    $("savedCard").hidden = !list.length;
+    var box = $("savedList"); box.innerHTML = "";
+    list.forEach(function(q, i){
+      var d = document.createElement("div"); d.className = "saved";
+      var a = document.createElement("a"); a.textContent = label(q);
+      a.addEventListener("click", function(){ write(q); render(); });
+      var x = document.createElement("a"); x.textContent = "remove";
+      x.addEventListener("click", function(){ var l = load("csh_saved", []); l.splice(i,1); store("csh_saved", l); drawSaved(); });
+      d.appendChild(a); d.appendChild(x); box.appendChild(d);
+    });
+  }
+  $("save").addEventListener("click", function(){
+    var l = load("csh_saved", []); l.unshift(read()); store("csh_saved", l.slice(0,20)); drawSaved();
+  });
+
+  /* tabs */
+  document.querySelectorAll(".tabs button").forEach(function(b){
+    b.addEventListener("click", function(){
+      document.querySelectorAll(".tabs button").forEach(function(x){ x.classList.toggle("on", x === b); });
+      ["vin","list","ask"].forEach(function(t){ $("tab-" + t).hidden = (t !== b.dataset.tab); });
+    });
+  });
+
+  /* VIN decode + recalls (NHTSA, free, no key) */
+  function row(k, v){ return v ? "<tr><td>" + k + "</td><td>" + v + "</td></tr>" : ""; }
+  function esc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+  $("vinGo").addEventListener("click", function(){
+    var vin = $("vin").value.trim().toUpperCase();
+    var out = $("vinOut");
+    if(!/^[A-HJ-NPR-Z0-9]{17}$/.test(vin)){ out.innerHTML = '<span class="warn">A VIN is 17 letters and numbers (no I, O or Q).</span>'; return; }
+    out.textContent = "Looking up…";
+    fetch("https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValues/" + vin + "?format=json")
+      .then(function(r){ return r.json(); })
+      .then(function(j){
+        var r = (j.Results || [])[0] || {};
+        if(!r.Make){ out.innerHTML = '<span class="warn">No match. Double-check the VIN.</span>'; return; }
+        var html = "<table>" +
+          row("Vehicle", esc([r.ModelYear, r.Make, r.Model, r.Trim].filter(Boolean).join(" "))) +
+          row("Body", esc(r.BodyClass)) + row("Engine", esc([r.DisplacementL && (r.DisplacementL + "L"), r.EngineCylinders && (r.EngineCylinders + "-cyl"), r.FuelTypePrimary].filter(Boolean).join(" "))) +
+          row("Drive", esc(r.DriveType)) + row("Transmission", esc(r.TransmissionStyle)) +
+          row("Built in", esc([r.PlantCity, r.PlantCountry].filter(Boolean).join(", "))) +
+          row("Decoder note", r.ErrorCode && r.ErrorCode !== "0" ? esc(r.ErrorText) : "") + "</table>";
+        out.innerHTML = html + '<p id="rec">Checking recalls…</p>';
+        if(!(r.Make && r.Model && r.ModelYear)){ $("rec").textContent = "Not enough info to check recalls."; return; }
+        return fetch("https://api.nhtsa.gov/recalls/recallsByVehicle?make=" + enc(r.Make) + "&model=" + enc(r.Model) + "&modelYear=" + enc(r.ModelYear))
+          .then(function(x){ return x.json(); })
+          .then(function(d){
+            var items = d.results || [];
+            if(!items.length){ $("rec").innerHTML = '<span class="ok">No recalls on file for this make, model and year.</span>'; return; }
+            var h = '<b class="warn">' + items.length + " recall" + (items.length > 1 ? "s" : "") + " on file for this model and year</b><ul class=\"check\">";
+            items.slice(0,8).forEach(function(i){ h += "<li><b>" + esc(i.Component) + ":</b> " + esc(i.Summary).slice(0,220) + "…</li>"; });
+            h += "</ul><p class=\"hint\">These are model-wide. To see whether <i>this exact car</i> has an open recall, enter the VIN at <a href=\"https://www.nhtsa.gov/recalls\" target=\"_blank\" rel=\"noopener\">nhtsa.gov/recalls</a>.</p>";
+            $("rec").innerHTML = h;
+          });
+      })
+      .catch(function(){ out.innerHTML = '<span class="warn">Could not reach the NHTSA database. Try again in a moment.</span>'; });
+  });
+
+  /* init */
+  write(load("csh_last", {}));
+  drawSaved();
+  if(Object.keys(AFFILIATE).some(function(k){ return AFFILIATE[k]; })) $("affNote").hidden = false;
+})();
+</script>
+</body>
+</html>
